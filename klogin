@@ -1,0 +1,48 @@
+#!/bin/bash
+# Author: Jeffry Johar
+# Date: 31/12/2019
+# Name: klogin
+# Objective: Easy login to Kubix and Namespace
+
+# global variables
+source /etc/kubix.cnf
+
+### functions
+
+pks-get-kubeconfig()
+{
+ echo "username: $1"
+ echo "cluster: $2"
+ echo "pks get-kubeconfig $2  -u $1 -p xxxxx -a $PKS_API -k"
+ echo -n "Please enter your iShields password"
+ pks get-kubeconfig $2  -u $1 -a $PKS_API -k
+}
+
+k-config-set-context()
+{
+ echo "namespace: $1"
+ echo "kubectl config set-context --current --namespace=$1"
+ kubectl config set-context --current --namespace=$1
+}
+
+### main
+echo "#### Welcome to Kubix Login v1####"
+[[ -n "$PKS_API" ]] && echo "PKS API = $PKS_API" || { echo "PKS_API not set";exit; }  
+echo
+
+case $# in
+ 2)
+ pks-get-kubeconfig $1 $2
+ ;;
+
+ 3)
+   pks-get-kubeconfig $1 $2
+   k-config-set-context $3
+ ;;
+
+ *)
+ echo "Kubix Login Usage:"
+ echo "klogin <username> <cluster>"
+ echo "klogin <username> <cluster> <namespace>"
+ ;;
+esac

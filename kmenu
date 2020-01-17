@@ -1,0 +1,47 @@
+!/usr/bin/bash
+# Author: Jeffry Johar
+# Date: 31/12/2019
+# Name: kmenu
+# Objective: Easy selection for Namespaces
+
+#check if user is login
+if ( kubectl get pod > /dev/null 2>&1 ); 
+then
+  echo "#### Welcome to Kubix Menu v1####"
+  echo
+else
+  echo "You are not login to Kubix. You may use klogin"
+   exit
+fi
+
+# global variables
+NS=$(kubectl get namespaces | awk '{print $1}' | tail -n +2)
+CLUSTER=$(kubectl config get-contexts | grep -e ^* | awk '{print $3}')
+
+# main
+echo "Cluster : $CLUSTER"
+echo
+
+echo "Available Namespaces"
+
+num=1 # iniital index for nsArrat
+nsArray+=(x)
+while IFS= read -r line
+do
+  #echo "$num. $line"
+  nsArray+=("$line")
+  #echo "Print Array"
+  echo "$num : ${nsArray[$num]}"
+  ((num++))
+done < <(echo $NS | tr " " "\n")
+echo
+read -p "Enter the number to select the namespace : " nsNum
+
+#check if selected number valid
+if (( $nsNum > 0 && $nsNum < $num ));
+then 
+  echo "kubectl config set-context --current --namespace=${nsArray[$nsNum]}"
+  kubectl config set-context --current --namespace=${nsArray[$nsNum]}
+else
+  echo "$nsNum is an invalid selection"
+fi
