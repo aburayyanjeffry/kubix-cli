@@ -6,3 +6,8 @@ klogin is use to get the kube config files so that user can . At the back, this 
 ```
 klogin username clustername
 ``` 
+
+klogin can also be use to login directly to the desired namespace. At the back, this will call pks get-kubeconfig and kubectl config set-context. Samplage usgage:-
+```
+klogin username clustername namespacename
+```
